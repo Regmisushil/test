@@ -2,7 +2,7 @@
 #include <sql.h>
 #include <sqlext.h> 
 #include <stdio.h>
-#include "../header/dbase.h"
+#include "../header/database.h"
 
 //sqltext.h is the ODBC extension header provided by microsoft
 
