@@ -72,7 +72,7 @@ void add_update_satellite ()
     
 
     datetime *launch_Date = NULL; 
-
+    //Test_push
     //userdefined structure data type to stored the consolidated satellite information
     sat satellite_info;
     char launch_Date_str[15];
@@ -290,7 +290,8 @@ void add_update_satellite ()
         closeConnection(hEnv, hDbc);
         }
     }   
-     else 
+     
+    else 
     {
         // Free allocated memory if not saving
         free(satellite_info.name);
