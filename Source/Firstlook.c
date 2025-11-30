@@ -1,14 +1,18 @@
 #include <stdio.h>
 #include <windows.h>
+#include <stdlib.h>
+#include <string.h>
 #include "../header/firstlook.h"
 #include "../header/datetime.h"
 #include "../header/satellite_h.h"
+#include "../header/database.h"
 void Sat_wc ()
 {
 
     printf("Welcome to Satellite Tracker.");
     menu_list();
     getchar();
+    printf("do you want to exist the application? (Y/N): ");
 
 }
 
@@ -34,11 +38,11 @@ void menu_list()
         add_update_satellite();
        break;
     case 2:
-       //view_satellite();
+       retrieve_satellites();
        break;
 
     case 3:
-        //del_sat();
+        del_sat();
         break;
     case 4:
         //close_app();
@@ -103,22 +107,27 @@ void add_update_satellite ()
     setCursorPosition(5+strlen(enter_satellite_class), 9);
     */
    int valid = 0;
-    while (!valid) {
+    while (!valid) 
+    {
         setCursorPosition(5+strlen("Enter name of a satellite name: "), 7);
         fgets(sat_name, sizeof(sat_name), stdin);
         sat_name[strcspn(sat_name, "\n")] = '\0';
 
-        if (strlen(sat_name) == 0) {
+        if (strlen(sat_name) == 0) 
+        {
             setCursorPosition(5, 2);
             printf("\nInvalid Data\n");
-        } else {
+        } 
+        else
+        {
             valid = 1;
         }
     }
 
 
    valid = 0;
-    while (!valid) {
+    while (!valid) 
+    {
         setCursorPosition(5+strlen("Enter the class of satellite launched: "), 9);
         fgets(sat_class, sizeof(sat_class), stdin);
         sat_class[strcspn(sat_class, "\n")] = '\0';
@@ -140,8 +149,9 @@ void add_update_satellite ()
 
 
     //Input and Date Validation Loop    
-     valid = 0;
-    while (!valid) {
+    valid = 0;
+    while (!valid) 
+    {
 
        setCursorPosition(5 + strlen(enter_date_of_launch), 11);
         //scanf("%d-%d-%d", &launch_Date.dt_day, &launch_Date.dt_mon, &launch_Date.dt_year);
@@ -186,6 +196,10 @@ void add_update_satellite ()
         }
     }
 
+    setCursorPosition(5, 2);
+            printf("\n                                                   ");
+            
+
     satellite_info.class = malloc(strlen(sat_class) + 1);
     strcpy(satellite_info.class, sat_class);
     //*(satellite_info.class) = sat_class; -- wrong approach
@@ -196,7 +210,8 @@ void add_update_satellite ()
     strcpy(satellite_info.name, sat_name);
     //*(satellite_info.name) = sat_name; -- wrong approach it will store the first character of sat_name on name of a structure 
 
-    if (launch_Date != NULL) {
+    if (launch_Date != NULL) 
+    {
     satellite_info.launch_date = malloc(sizeof(datetime));
     *(satellite_info.launch_date) = *launch_Date; //deep copy
     //satellite_info.launch_date = launch_Date; --shallow copy
@@ -221,12 +236,62 @@ void add_update_satellite ()
     */
 
     free(launch_Date);
+    setCursorPosition(5, 12);
     printf("Do You want to save the details? (Y/N): ");
     char choice;
-    if (scanf(" %c", &choice) == 1 && (choice == 'Y' || choice == 'y')) {
+    SQLHENV hEnv;
+    SQLHDBC hDbc;
+    SQLRETURN ret;
+    if (scanf(" %c", &choice) == 1 && (choice == 'Y' || choice == 'y'))
+    {
         // Save the satellite_info to your data store
-        printf("Satellite details saved successfully.\n");
-    } else {
+
+        hDbc = connectToDB(&hEnv);
+        char query[512];
+        if(hDbc!=NULL)
+        {
+            if (satellite_info.launch_date != NULL) 
+        {
+            //snprintf is C standard library function 
+            //used to format a string safely into a buffer
+            //sie of query returned by snprintf can be used for preventing buffer overflow.
+
+            snprintf(query, sizeof(query),
+             "INSERT INTO Satellites (Name, Class, LaunchDate) "
+             "VALUES ('%s', '%s', '%04d-%02d-%02d')",
+             satellite_info.name,
+             satellite_info.class,
+             satellite_info.launch_date->dt_year,
+             satellite_info.launch_date->dt_mon,
+             satellite_info.launch_date->dt_day);
+        } 
+            else 
+            {
+                snprintf(query, sizeof(query),
+                "INSERT INTO Satellites (Name, Class, LaunchDate) ""VALUES ('%s', '%s', NULL)",satellite_info.name,satellite_info.class);
+            }
+
+        ret = executeStatement(hDbc, query,NULL);
+
+        free(satellite_info.name);
+        free(satellite_info.class);
+        if (satellite_info.launch_date != NULL) 
+            {
+                free(satellite_info.launch_date);
+            }
+        if (SQL_SUCCEEDED(ret)) 
+            {
+            printf("Satellite details saved successfully.\n");
+            }
+        else 
+            {
+        printf("Failed to save satellite details.\n");
+            }
+        closeConnection(hEnv, hDbc);
+        }
+    }   
+     else 
+    {
         // Free allocated memory if not saving
         free(satellite_info.name);
         free(satellite_info.class);
@@ -235,6 +300,8 @@ void add_update_satellite ()
         }
         printf("Satellite details not saved.\n");
     }
+
+
 }
 
     
