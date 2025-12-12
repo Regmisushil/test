@@ -10,6 +10,10 @@ typedef struct sat
     char *class;
     char *name;
     datetime * launch_date;
+    char *payload;
+    char *space_agency;
+    char *identifier_number;
+    char *status;
 } sat;
 
 #endif

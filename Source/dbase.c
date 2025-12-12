@@ -73,15 +73,16 @@ void viewStatement(SQLHDBC hDbc, const char *query)
     ret = SQLExecDirect(hStmt, (SQLCHAR*)query, SQL_NTS);
     if (SQL_SUCCEEDED(ret)) 
     {
-        SQLCHAR name[128], classVal[128], launchDate[64];
-        printf("%-20s %-15s %-20s\n", "Satellite", "Class", "Launch Date");
+        SQLCHAR name[128], classVal[128], payload[128], launchDate[64];
+            printf("%-20s %-15s %-20s %-20s\n", "Satellite", "Class", "Payload", "Launch Date");
         printf("---------------------------------------------------------------\n");
         while (SQLFetch(hStmt) == SQL_SUCCESS) {
             SQLGetData(hStmt, 1, SQL_C_CHAR, name, sizeof(name), NULL);
             SQLGetData(hStmt, 2, SQL_C_CHAR, classVal, sizeof(classVal), NULL);
-            SQLGetData(hStmt, 3, SQL_C_CHAR, launchDate, sizeof(launchDate), NULL);
+            SQLGetData(hStmt, 3, SQL_C_CHAR, payload, sizeof(payload), NULL);
+            SQLGetData(hStmt, 4, SQL_C_CHAR, launchDate, sizeof(launchDate), NULL);
 
-            printf("%-20s %-15s %-20s\n", name, classVal, launchDate);
+            printf("%-20s %-15s %-20s %-20s\n", name, classVal, payload, launchDate);
 
         }
     } 
