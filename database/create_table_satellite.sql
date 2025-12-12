@@ -1,0 +1,31 @@
+USE [SatelliteDB]
+GO
+
+/****** Object:  Table [dbo].[Satellites]    Script Date: 12/12/2025 7:38:58 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Satellites](
+	[SatID] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](100) NULL,
+	[Class] [nvarchar](100) NULL,
+	[LaunchDate] [date] NULL,
+	[Payload] [nvarchar](100) NULL,
+	[Agency] [nvarchar](100) NULL,
+	[IDN] [nvarchar](50) NOT NULL,
+	[Status] [nvarchar](50) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[SatID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[IDN] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
